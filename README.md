@@ -113,16 +113,16 @@
 | Day | Tasks | Done | Time (Hours) |
 |-----|-------|------|--------------|
 | 1   | **Setup & React Basics** | | 6 |
-|     | - Install Node.js, VS Code, and create a React project. | [ ] | |
-|     | - Read React Docs: Getting Started. | [ ] | |
-|     | - Build a "Hello World" app. | [ ] | |
+|     | - Install Node.js, VS Code, and create a React project. | [X] | |
+|     | - Read React Docs: Getting Started. | [X] | |
+|     | - Build a "Hello World" app. | [X] | |
 | 2   | **React Components & JSX** | | 6 |
-|     | - Study React components and JSX syntax. | [ ] | |
-|     | - Build a simple component (e.g., a button with props). | [ ] | |
-|     | - Read "Effective TypeScript" Chapter 1 (TypeScript basics). | [ ] | |
+|     | - Study React components and JSX syntax. | [X] | |
+|     | - Build a simple component (e.g., a button with props). | [X] | |
+|     | - Read "Effective TypeScript" Chapter 1 (TypeScript basics). | [X] | |
 | 3   | **State & Props** | | 6 |
 |     | - Learn useState hook (React Hooks Guide). | [ ] | |
-|     | - Build a counter app with state management. | [ ] | |
+|     | - Build a counter app with state management. | [X] | |
 |     | - Practice TypeScript types for props. | [ ] | |
 | 4   | **TypeScript Integration** | | 6 |
 |     | - Convert your React app to TypeScript. | [ ] | |
