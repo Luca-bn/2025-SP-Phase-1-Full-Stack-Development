@@ -121,7 +121,7 @@
 |     | - Build a simple component (e.g., a button with props). | [X] | |
 |     | - Read "Effective TypeScript" Chapter 1 (TypeScript basics). | [X] | |
 | 3   | **State & Props** | | 6 |
-|     | - Learn useState hook (React Hooks Guide). | [ ] | |
+|     | - Learn useState hook (React Hooks Guide). | [X] | |
 |     | - Build a counter app with state management. | [X] | |
 |     | - Practice TypeScript types for props. | [ ] | |
 | 4   | **TypeScript Integration** | | 6 |
