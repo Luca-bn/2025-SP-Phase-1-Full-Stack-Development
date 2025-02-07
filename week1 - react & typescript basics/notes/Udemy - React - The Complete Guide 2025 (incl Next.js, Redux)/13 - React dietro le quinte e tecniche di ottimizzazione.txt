@@ -1,0 +1,99 @@
+memo si utilizza wrappando la funzione che definisce un componente ed ha come scopo,
+quello di prevenire il rirendering di quel componente in caso di aggiornamento del parent.
+
+const Component = memo(function Component(prop) { return <></> });
+export default Component;
+
+quello che fa memo è verificare se le prop passate al componente sono cambiate rispetto al precedente rendering.
+Se sono cambiate, lo rirenderizza, in caso contrario, no. In caso di un cambio di stato interno al componente, memo non interferisce in alcun modo.
+
+memo non va usato per ogni componente, altrimenti react deve controllare per ogni rendering 
+se le prop sono cambiate rispetto a prima e questo ha un costo in termini di performance.
+Inoltre, non va utilizzato su componenti dove le props cambiano spesse (sempre per questioni di performance).
+memo va usato solo su dei componenti il più in alto possible all'interno del DOM, in quanto 
+prevenire che quel singolo componente non venga rirenderizzato, evita che anche tutti i suoi componenti figli non vengano rirenderizzati.
+
+Poichè memo controlla se il valore di una prop è diverso rispetto al precedente, questo significa che se il parent passa un oggetto (come una funzione)
+come prop al figlio, il quale è creato all'interno della definizione del parent, ad ogni rirender del parent, quell'oggetto sarà sempre diverso
+causando il controllo sulle prop fatto da memo, sempre negativo e rirenderizzato il child ogni volta che il parent cambia.
+Un modo per prevenire questo (almeno con le funzioni) è quello di usare l'hook "useCallback" su una funzione, in questo modo, questa non verrà ricreata ad ogni rirendering del parent.
+
+export defaul Parent() {
+	const handler = useCallback(function handler() => {});
+	return <Child onEvent={handler} />;
+}
+
+L'hook "useMemo" si utilizza come wrapper per una funzione all'interno di un componente e serve per prevenire la sua esecuzione ad ogni rirendering ed esegurila solo in base alle sue dipendenze.
+"useMemo" non è da confondere con "memo". memo si usa per wrappere la funzione "componente", useMemo per wrappare una funzione all'interno di un componente.
+Anche "useMemo" allo stesso modo di "memo" è da utilizzare con parsimonia, in quanto forza react a controllare le dipendenze ogni volta che il componente viene rirenderizzato.
+
+const Component = memo(function Component(value) {
+	const resultBasedOnValue = useMemo(() => veryIntenseFunction(value), [value]);
+	return <></>;
+});
+export default Component;
+
+in questo esempio, memo fa si che "Component" venga rirenderizzato quando il parent viene rirenderizzato SOLO se cambia il valore della prop "value".
+useMemo invece, fa si che la funzione "veryIntenseFunction" venga eseguita solo quando cambia "value" che è una sua dipendenza.
+
+Quando react richiama una funzione di un componente per il rendering o rirendering, non significa che vada ad aggiornare il DOM.
+Le operazioni per aggiornare il DOM sono abbastanzia dispendiose e questo sarebbe molto costoso in termini di performance. 
+Quello che fa nello specifico è modificare SOLO gli elementi del DOM che sono cambiati rispetto al precedente rendering.
+Per fare questo, react mantiene in memoria un DOM virtuale (o meglio degli snapshot del DOM) che usa per confrontare le differenze tra i vari rendering.
+Una volta trovate le differenze, va poi ad aggiornare il DOM effettivo, modificando solo i punti in cui ci sono cambiamenti rispetto al precedente snapshot.
+
+React tiene traccia dello stato di un componente attraverso 3 fattori:
+	-	Il tipo e l'istanza di quel componente:
+		2 istanze diverse di uno stesso componente hanno stati distinti e separati tra loro.
+	-	La posizione dell'istanza all'interno del component tree:
+		Se un componente viene spostato dalla sua posizione precedente, perde il suo stato precedente.
+	-	Attraverso la prop "key" specificata per quell'istanza del componente:
+		Questo significa che se viene modificata la key associata ad un componente, questo perde il suo stato precedente.
+Es: 
+Se consideriamo una lista di istanze di componenti di questo tipo:
+<Parent>
+	<Child key="0" /> <!-- id: istanza1, stato attuale = "A" -->
+	<Child key="1" /> <!-- id: istanza2, stato attuale = "B" -->
+</Parent>
+e la modifichiamo aggiungendo un nuovo componente come segue:
+<Parent>
+	<Child key="0" /> <!-- id: istanza3, (nuova istanza aggiunta) stato attuale = "A" (stato della precedente istanza che era in questa posizione ed aveva questa key) -->
+	<Child key="1" /> <!-- id: istanza1, stato attuale = "B" (lo stato di questa istanza è passato da "A" a "B") -->
+	<Child key="2" /> <!-- id: istanza2, stato attuale = null (questa istanza ha perso il suo stato precedente "B") -->
+</Parent>
+
+Quello che è successo qui può essere spiegato in questo modo:
+	-	react ha in memoria gli stati "A" e "B": 
+		che sono associati rispettivamente a delle istanze di componenti "Child" posizionati all'indice 0 e 1 sotto "Parent" con key 0 ed 1.
+	-	al secondo rendering, quando è stato aggiunto il nuovo child in prima posizione: 
+		react prova ad assegnare gli stati e quindi li passa ai primi 2 elementi che per lui sono identici a quelli precedenti (anche se il primo è una nuova istanza!).
+
+Questo è il motivo per cui quando si iterano degli elementi da mostrare a video, non va usato l'indice come key.
+
+Una buona osservazione dal punto precedente, fa capire che quindi la prop "key" è molto utile per react in quanto riesce a fargli identificare in modo univoco un componente.
+Questo significa che non solo cambiare la chiave di un componente fa cambiare il suo stato, ma fa anche si che il componente venga RICARICATO all'itnerno del DOM.
+Quindi è bene usare delle key che rappresentano in modo univoco l'istanza di un componente anche per una questione di performance (oltre che per possibili bug).
+
+Un altro aspetto interessante della prop "key" è che può essere usata dal parent di un componente per forzare il reset di un componente figlio.
+Se ad esempio il parent usa una chiave specifica sul figlio e successivamente, modifica quella chiave, react creerà nuovamente quel componente figlio da zero.
+
+React per evitare di renderizzare più volte uno stesso componente quando vengono settati più stati diversi all'interno di una funzione, utilizza lo "state batching".
+Praticamente, ogni volta che viene chiamata una funzione di update di uno stato, questa operazione viene aggiunta ad una coda.
+Tutte le operazioni all'interno della coda vengono poi eseguite fino ad ottenere l'ultimo stato effettivo da passare all'istanza del componente.
+Quando il componente viene renderizzato, riceve l'ultimo stato ottenuto.
+Es: export default Component() {
+	const [state, setState] = useState(0);
+	handle(newState) { // state = 0, newState = 1
+		setState(newState); 				// schedulata un'operazione in cui lo stato deve essere settato a 1;
+		setState(state + newState); 		// schedulata un'operazione in cui lo stato deve essere il state + newState;
+		console.log(state);					// => l'output è 0
+	} // al prossimo rendering state ha come valore 1.
+	.....
+}
+Questo riassume l'esempio precedente:
+	-	alla prima chiamata setState(newState) viene schedulata questa funzione di update da react: (prev: 0) => newState: 1
+	-	alla seconda chiamata setState(state + newState) viene schedulata questa funzione: (prev: 0) => 0 + (newState: 1)
+		in questo caso "prev" fa riferimento al valore ATTUALE di state (quindi 0) e non 1 (settato al punto precedente)
+	-	al console log, stampa il valore corrente che è 0.
+	
+Ultima nota riguardo l'ottimizzazione di react, riguarda la libreria million.js (https://million.dev/), che può migliorare le performance di react andando a migliorare l'algoritmo di creazione e gestione del virtual DOM.

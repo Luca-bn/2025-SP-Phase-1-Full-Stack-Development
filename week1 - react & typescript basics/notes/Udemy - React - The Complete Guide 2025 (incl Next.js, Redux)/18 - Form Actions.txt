@@ -1,0 +1,29 @@
+Per react >= 19 per gestire i form c'è la funzionalità aggiuntiva FormActions.
+Per usare questa funzionalità, si usa l'attributo "action" sul tag form (che di default indica il path dove andare al submit).
+Con react, l'attributo "action" prende in input una funzione per gestire il submit.
+La cosa interessante è che react in automatico chiama il preventDefault per il submit e passa alla funzione un oggetto "FormData" rappresentante il form in oggetto.
+
+Questa funzione può essere usata per gestire lo stato del form grazie all'hook "useActionState".
+Questo hook prende in input la funzione per gestire il submit ed un valore iniziale per lo stato e restituisce 3 oggetti:
+	-	lo stato attuale (contiene quello che ritorna la funzione passata in input);
+	-	una funzione che wrappa quella passata in input:
+		questa funzione è da passare all'attributo action del form e richiama la funzione passata in input.
+		NOTA: quando richiama la funzione in input, i parametri passati diventano 2, lo stato precedente del form e lo stato attuale.
+		NOTA2: questa funzione può essere definita con async in modo da poter usare await al suo interno.
+	-	un booleano che rappresenta lo stato "pending" del form.
+
+Quando si usa questo approccio, dopo il submit il form viene resettato in automatico.
+Per fare in modo che il form quindi conservi i dati inseriti prima del submit, bisogna fare in modo che la funzione passata in input all'hook, restituisca i campi del form.
+Questi valori, andranno a valorizzare l'oggetto che rappresenta lo stato attuale, il quale potrà essere usato per andare a valorizzare gli attributi "defaultValue" degli elementi del form.
+In questo modo, i dati rimarrano inseriti anche dopo il submit, ma bisogna tenere a mente, che in caso si chiami il metodo built-in "reset()" del form, questo valorizzerà tutti i campi del form con i loro defaultValue!
+
+Un'altro hook >= 19 è useFromStatus. Questo hook non può essere usato direttamente all'interno del componente che ha il form ed usa useActionState, ma va usato in un componente che viene usato al suo interno.
+Questo hook ritorna informazioni riguardanti lo stato del form tipo se è in pending.
+
+Le funzioni per le form action, oltre che essere passate all'attributo action del tag form, possono essere passate ad ogni bottone all'interno di un form usando l'attributo "formAction".
+La cosa interessante in questo caso è che si possono definire diverse azioni per lo stesso form in questo modo.
+
+useOptimistic è un hook che ha come scopo quello di aggiornare in modo temporaneo l'ui (tipo mentre si aspetta l'esito di una chiamata) con un valore, che poi verrà rimpiazzato da quello effettivo.
+L'idea è quello di utilizzarlo in combinazione con "useActionState" ed aggiornare temporaneamente l'ui mentre il form è in stato pending.
+questo hook prende in input un valore iniziale ed una funzione da chiamare per aggiornare in modo ottimistico il valore.
+Restituisce il valore e una funzione da usare per chiamare la funzione di update passata in input.

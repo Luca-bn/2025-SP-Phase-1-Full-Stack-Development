@@ -1,0 +1,33 @@
+In React i componenti possono anche essere definiti tramite classi.
+Es: class Product extends Component {
+		render() { retrun <h1>class component!</h1>; };
+	}
+prima di react 16.8 i componenti potevano essere dichiarati solo in questo modo.
+Class-based components non possono usare hooks.
+
+Class-based components possono lavorare insieme ai function-based components.
+Per accedere alle props all'interno del metodo "render", è possibile usare "this.props" (this rappresenta la classe da cui estende "Component").
+
+Per gestire gli stati, bisogna inizializzarli all'interno del costruttore (tramite this.state). this.state deve SEMPRE essere un oggetto.
+Questo significa che gli stati nei class-based components sono sempre raggruppati tutti insieme.
+Allo stesso modo, per modificare uno stato si usa "this.setState" che prende sempre in input un oggetto, che verrà mergiato da react al precedente oggetto dello stato.
+Anche in questo caso è possible recuperare il valore precedente allo stesso modo dei componenti funzionali (this.setState(prev => {return {...prep, newval: 1}});
+
+Gli handler invece vanno definiti come metodi all'interno della classe e quando vanno passati, va usato il bind(this).
+Es: <button onClick={this.handleClick.bind(this)} />
+
+Per usare i side-effects all'interno dei class-based components si possono usare i seguenti metodi che rappresentano il lifecycle del componente:
+	-	componentDidMount()	:	chiamato quando il componente è montato e renderizzato da react (solo la prima volta);
+	-	componentDidUpdate():	chiamato ogni volta che il componente viene aggiornato (prende in input lo stato e le props precedenti all'aggiornamento);
+	-	componentWillUnmount():	chiamato prima che il componente venga distrutto.
+	
+Per quanto riguarda i context, i class-based components, possono accedere ad un solo context (a differenza dei functional che possono usarne di più usando l'hook useCtnext).
+La definizione dei context è identica, l'unica cosa che cambia è che una classe per accedere, deve definire un campo statico il cui valore è il context creato.
+es: static contextType = UserContext;
+
+Gli Error Boundaries sono componenti sono componenti che possono essere usati per wrappare altri componenti in modo da catturare eventuali errori.
+Gli Error Boundaries sono normali class-based components (devono essere per forza definiti come class-based components) che possono gestire gli errori lanciati dai componenti figli tramite il metodo "componentDidCatch".
+Essendo normali componenti, possono implementare il metodo render per ritornare del codice JSX.
+Diciamo che possono essere semplificati come dei blocchi try che possono essere usati per circondare del codice JSX e che al posto del catch, usano il metodo componentDidCatch per gestire l'errore catturato.
+
+

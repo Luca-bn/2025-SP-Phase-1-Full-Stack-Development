@@ -1,0 +1,38 @@
+Gli hooks oltre a poter essere dichiarati all'interno di component functions, possono anche essere dichiarati all'interno di custom hooks.
+L'idea dietro la creazione di custom hooks consiste nel riutilizzare parti di codice all'interno dei componenti e rendere il codice dei componenti più pulito.
+
+per creare un custom hook basta creare una semplice function che inizia con "use" (la maggior parte dei progetti react assume che le funzioni che iniziano con use siano hooks).
+Es:	
+export function useFetch(fetchFn) {
+	const [isLoading, setIsLoading] = useState(false);
+	const [data, setData] = useState([]);
+
+	useEffect(() => {
+		async function fetchData() {
+			setIsLoading(true); 
+			const res = await fetchFn;
+			const json = await res.json();
+			setData(json);
+			setIsLoading(false);
+		}
+		fetchData();
+	}
+	
+	return {
+		isLoading,
+		data
+	}
+}
+
+visto che gli hooks sono semplici funzioni, è possibile specificare delle pros in input ed un valore da restituire.
+Una cosa importante, quando un componente utilizza un custom hook e questo viene aggiornato per un suo stato interno,
+questo causa il refresh anche del componente (esattamente come gli stati sarebbero al suo interno).
+
+function Component(props) {
+const { data, isLoading } = useFetch(fetch("http://url.it/api")); 
+// quando lo stato di data o isLoading cambia all'interno di useFetch, si aggiorna anche questo componente.
+...
+}
+
+I custom hooks, esattamente come gli altri componenti, hanno i loro stati legati alle singole istanze, quindi se 
+2 componenti, usano la stessa custom hook, queste 2 hanno stati completamente slegati ed indipendenti tra loro.

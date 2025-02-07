@@ -1,0 +1,65 @@
+Per effettuare una chiamata http con react, NON va usato il fetch direttamente nel componente:
+export default function Component(props) {
+	const [data, setData] = useState([]);
+	
+	// questo codice va in infinite loop!
+	fetch("http://example.com/api/data")
+	.then(res => res.json())
+	.then(json => setData(json));
+	
+	return <></>;
+}
+
+quello che succede sopra è che inizialmente il componente viene inizializzato con state [].
+Successivamente viene effettuata la chiamata http ed infine viene creato il componente nel DOM.
+Quando la response arriva, la chiamata al metodo setData fa ricaricare il componente che fa rifare la chiamata al backend andando in loop.
+Per evitare questo, basta wrappare la chiamata all'interno dell'hook useEffect:
+useEffect(() => {
+	fetch("http://example.com/api/data")
+	.then(res => res.json())
+	.then(json => setData(json));
+}, []);
+lasciando come dipendenze un array vuoto, questo metodo viene richiamato una sola volta e non va in loop.
+
+Per usare le keywords "async" ed "await" che di base non sono supportate in react, si può usare questo workaround:
+useEffect(() => {
+	// qui invece di chiamare direttamente la logica come prima, definisci una nuova funzione async
+	async function fetchData() {
+		// siccome qui la funzione è async, si può usare await
+		const response = await fetch("http://example.com/api/data");
+		const json = await response.json();
+		setData(json)
+	}
+	fetchData(); // qui richiami la funzione appena creata.
+}, []);
+
+per gestire il caso in cui la chiamata sia ancora in corso oppure se sia stata completata, si può usare un altro stato:
+export default function Component(props) {
+	const [ isLoading, setIsLoading] = useState(false);
+	const [data, setData] = useState([]);
+	
+	useEffect(() => {
+		async function fetchData() {
+			setIsLoading(true); // sta caricando
+			const response = await fetch("http://example.com/api/data");
+			const json = await response.json();
+			setData(json);
+			setIsLoading(false); // ha finito di caricare
+		}
+		fetchData();
+	}, []);
+	return <></>;
+}
+
+NOTA: il metodo "fetch" può essere usato anche per gli altri metodi http (non solo get):
+async function putData(body) {
+	const response = await fetch("http://example.com/api/data", {
+		method: "PUT",
+		body: JSON.stringfy(body),
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	});
+	const json = await response.json();	
+}
+

@@ -1,0 +1,89 @@
+I form sono un insieme di input raggruppati all'interno del tag <form>.
+Le principali attività da gestire sono il submit e la validazione.
+
+Il l'attributo "for" usato per le labels di un input, in react diventano "htmlFor".
+Qualsiasi bottone all'interno di un form ha come type "submit" di default.
+Di default, quando viene eseguito il submit di un form la pagina viene ricaricata e viene fatta una chiamata http al server del sito web.
+Per evitare questo comportamento si possono seguire 2 strade:
+	-	usare l'attributo type="button" sul pulsante (in questo modo il click non triggera il submit);
+	-	aggiungere un handler al form per l'onSumbit ed usare preventDefault() sull'evento ricevuto.
+
+Per gestire lo stato del form, si può scegliere se usare stati singoli, oppre un unico oggetto ed allo stesso modo, handler singoli per gestire il cambiamento degli input, oppure una funzione generica.
+Un buon approccio potrebbe essere questo:
+export default function Form() {
+	const [formData, setFormData] = useState({});
+	function handleInputChange(identifier, event) {
+		setFormData(prev => {
+			return { 
+				...prev, 
+				[identifier]: event.target.value, // setto in modo dinamico il nome della property
+			};
+		})
+	}
+	...
+}
+
+Un altro modo per effettuare il binding tra il codice ed i tag html è quello di usare l'hook "useRef".
+Può essere un'alternativa se si vuole solo leggere il valore degli input senza modificarli lato codice.
+export function Component() {
+	const email = useRef();
+	const psw = useRef();
+	
+	onSubmit() {
+		const mail = email.current.value;
+		const password = psw.current.value;
+		....
+	}
+	
+	return...
+	... <input id="emal" name="email" ref={email}...
+	... <input id="psw" name="psw" ref={psw}...	
+}
+
+
+Un'ulteriore alternativa per gestire questa casistica, può essere la class "FormData" messa a disposizione dal browser.
+Per usarlo basta creare un nuovo oggetto FormData passando in input il riferimento al form html.
+Una volta fatto, sarà possibile usare il metodo "get()" passando il nome del campo del form che si vuole ottenere.
+Questo implica, che per funzionare questo metodo, i campi che si vogliono recuperare devono avere l'attributo "name" specificato.
+Infine, in caso di campi multipli con lo stesso nome (es una scelta multipla per un campo), possono essere recuperati usando il metodo "getAll" seguito dal nome.
+
+export function Component() {
+
+	function handleSubmit(event) {
+		const fd = new FormData(event.target); // creo il FormData passando in input il riferimento all'elemento html
+		const data = Object.fromEntries(fd.entries()); // creo un oggetto con tutti i campi del form (eccetto quelli multipli)
+		data.multi = fd.getAll("multi-select"); // qui aggiungo il campo "multi" che avà come valore un array con tutte le selezioni del form "multi-select"
+	}
+	
+	return <form onSubmit={handleSubmit}>
+	<input name="email"...
+	<input name="psw"...
+	....
+}
+
+Per resettare un form è possibile farlo nei seguenti modi:
+	-	specificando come type di un bottone "reset". In questo modo, al click verrà resettato il form.
+	-	in caso siano stati usati degli states per gestire il form, si possono risettare ai valori iniziali.
+	-	in caso sia stato usato l'useRef, si può settare manualmente il valore di quell'elemento al suo valore iniziale (SCONSIGLIATO).
+	-	si può chiamare il metodo reset() del form (ad esempio usando la sua ref).
+	
+La validazione del form può essere fatta:
+	-	ad ogni cambio di stato:
+		in questo caso però l'errore potrebbe essere mostrato troppo presto.
+	-	quando viene perso il blur:
+		in questo caso serve tenere traccia di quando l'utente perde il blur.
+	-	quando viene fatto il submit:
+		questo genere di validazione è sempre bene farlo, a prescindere dalle altre 2 casistiche.
+	
+In fase di validazione, è bene conoscere anche gli attributi built-in del browser che possono essere applicati sugli elementi del form,
+come required, min, max, pattern etc. che effettuano automaticamente la validazione senza dover aggiungere codice.
+	
+Ovviamente, è possibile combinare insieme le validazioni (sia quelle built-in che quelle aggiunte lato react).
+Un esempio può essere verificare che psw e confirm-psw siano uguali (che è un qualcosa che non si può fare solo con la validazione built-in del browser).
+	
+Per evitare di duplicare il codice in più punti è possibile definire:
+	-	componenti comuni (per gestire le informazioni di base comuni ai vari elementi);
+	-	validatori comuni (in questo modo è possibili riutilizzare la stessa validazione per più componenti);
+	-	custom hooks (per gestire in un unico punto gli stati comuni).
+	
+Un'ultima cosa da tenere a mente può essere quella di usare librerie esterne per la gestione degli input.
