@@ -146,11 +146,11 @@
 | 3   | **State & Props**                                            |      | 6            |
 |     | - Learn useState hook (React Hooks Guide).                   | [X]  |              |
 |     | - Build a counter app with state management.                 | [X]  |              |
-|     | - Practice TypeScript types for props.                       | [ ]  |              |
+|     | - Practice TypeScript types for props.                       | [X]  |              |
 | 4   | **TypeScript Integration**                                   |      | 6            |
-|     | - Convert your React app to TypeScript.                      | [ ]  |              |
-|     | - Add types for props and state.                             | [ ]  |              |
-|     | - Read "Effective TypeScript" Chapter 2 (Type Inference).    | [ ]  |              |
+|     | - Convert your React app to TypeScript.                      | [X]  |              |
+|     | - Add types for props and state.                             | [X]  |              |
+|     | - Read "Effective TypeScript" Chapter 2 (Type Inference).    | [X]  |              |
 | 5   | **Project: Todo List App**                                   |      | 8            |
 |     | - Build a Todo List app with React + TypeScript.             | [X]  |              |
 |     | - Implement add/delete functionality.                        | [X]  |              |
@@ -179,7 +179,7 @@
 | 9   | **Redux Toolkit**                                               |      | 6            |
 |     | - Study Redux Toolkit.                                          | [ ]  |              |
 |     | - Refactor your Redux code with Toolkit.                        | [ ]  |              |
-|     | - Read "Effective TypeScript" Chapter 3 (Type Design).          | [ ]  |              |
+|     | - Read "Effective TypeScript" Chapter 3 (Type Design).          | [X]  |              |
 | 10  | **Performance Optimization**                                    |      | 6            |
 |     | - Learn React memoization (React.memo, useMemo).                | [X]  |              |
 |     | - Optimize your Todo List app.                                  | [ ]  |              |
