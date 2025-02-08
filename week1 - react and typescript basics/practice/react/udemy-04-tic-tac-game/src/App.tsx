@@ -4,24 +4,33 @@ import Player from "./components/Player"
 import Log from "./components/Log"
 import GameOver from "./components/GameOver"
 import WINNING_COMBINATIONS from "./constants/winning-combinations"
+import React from "react"
 
-const PLAYERS = {
-  "X" : "Player1",
-  "O" : "Player2"
+export type GameLog = {
+  row: number,
+  col: number,
+  player: string,
+}
+
+export type Players = { X: string, O: string }
+
+const PLAYERS: Players = {
+  "X": "Player1",
+  "O": "Player2"
 };
 
-function findActivePlayer(turns) {
+function findActivePlayer(turns: GameLog[]) {
   return turns.length > 0 && turns[0].player === "X" ? "O" : "X";
 }
 
-function getWinner(gameBoard, players) {
-  let winner;
-  for(const combination of WINNING_COMBINATIONS) {
+function getWinner(gameBoard: Array<Array<string | null>>, players: Players) {
+  let winner: string = "";
+  for (const combination of WINNING_COMBINATIONS) {
     const firstVal = gameBoard[combination[0].row][combination[0].col];
     const secVal = gameBoard[combination[1].row][combination[1].col];
     const thirdVal = gameBoard[combination[2].row][combination[2].col];
 
-    if(firstVal && (firstVal === secVal && secVal === thirdVal)) {
+    if (firstVal && (firstVal === secVal && secVal === thirdVal)) {
       winner = players[firstVal];
       break;
     }
@@ -32,32 +41,32 @@ function getWinner(gameBoard, players) {
 
 function App() {
   const [players, setPlayers] = useState(PLAYERS)
-  const [gameTurns, setGameTurns] = useState([]);
+  const [gameTurns, setGameTurns] = useState<GameLog[]>([]);
   const activePlayer = findActivePlayer(gameTurns);
-  
-  const gameBoard = [
+
+  const gameBoard: Array<Array<string | null>> = [
     [null, null, null],
     [null, null, null],
     [null, null, null]
   ];
-  
-  for(const turn of gameTurns)
+
+  for (const turn of gameTurns)
     gameBoard[turn.row][turn.col] = turn.player;
-  
+
   const winner = getWinner(gameBoard, players);
-  
-  const handleSquareSelect = (rowIndex, colIndex) => {
+
+  const handleSquareSelect = (rowIndex: number, colIndex: number) => {
     setGameTurns(prevTurns => {
       let currentPlayer = findActivePlayer(prevTurns);
-      return [{player: currentPlayer, row: rowIndex, col: colIndex}, ...prevTurns];
+      return [{ player: currentPlayer, row: rowIndex, col: colIndex }, ...prevTurns];
     });
   }
 
-  const handlePlayerNameChange = (symbol, name) => {
+  const handlePlayerNameChange = (symbol: "X" | "O", name: string) => {
     setPlayers(prevPlayers => {
       return {
         ...prevPlayers,
-        [symbol] : name
+        [symbol]: name
       }
     })
   }

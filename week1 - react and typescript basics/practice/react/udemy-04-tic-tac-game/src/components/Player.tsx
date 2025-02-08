@@ -1,22 +1,31 @@
+import React, { ChangeEvent } from "react";
 import { useState } from "react";
 
-export default function Player({ name, symbol, isActive, udpateName, ...props }) {
+type PlayerPros = {
+    name: string,
+    symbol: "X" | "O",
+    isActive: boolean,
+    udpateName: (symbol: "X" | "O", name: string) => void,
+    props?: unknown[],
+}
 
-    const [ playerName, setPlayerName ] = useState(name);
-    const [isEditing, setEditing] = useState(false);
+export default function Player({ name, symbol, isActive, udpateName, ...props }: PlayerPros) {
 
-    const handleClick = (symbol, name) => {
+    const [playerName, setPlayerName] = useState<string>(name);
+    const [isEditing, setEditing] = useState<boolean>(false);
+
+    const handleClick = (symbol: "X" | "O", name: string) => {
         setEditing((editing) => !editing);
         isEditing && udpateName(symbol, playerName);
     }
 
-    const handleChange = (event) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setPlayerName(event.target.value);
     }
 
     let playerNameTemplate = <span className="player-name">{playerName}</span>;
 
-    if(isEditing)
+    if (isEditing)
         playerNameTemplate = <input type="text" required value={playerName} onChange={handleChange}></input>;
 
     return (
