@@ -6,10 +6,12 @@ import GameOver from "./components/GameOver"
 import WINNING_COMBINATIONS from "./constants/winning-combinations"
 import React from "react"
 
+export type Player = "X" | "O" | null;
+
 export type GameLog = {
   row: number,
   col: number,
-  player: string,
+  player: Player,
 }
 
 export type Players = { X: string, O: string }
@@ -19,16 +21,16 @@ const PLAYERS: Players = {
   "O": "Player2"
 };
 
-function findActivePlayer(turns: GameLog[]) {
-  return turns.length > 0 && turns[0].player === "X" ? "O" : "X";
+function findActivePlayer(turns: GameLog[]): Player {
+  return turns.length > 0 && turns[0]!.player === "X" ? "O" : "X";
 }
 
-function getWinner(gameBoard: Array<Array<string | null>>, players: Players) {
+function getWinner(gameBoard: Array<Array<Player>>, players: Players): string {
   let winner: string = "";
   for (const combination of WINNING_COMBINATIONS) {
-    const firstVal = gameBoard[combination[0].row][combination[0].col];
-    const secVal = gameBoard[combination[1].row][combination[1].col];
-    const thirdVal = gameBoard[combination[2].row][combination[2].col];
+    const firstVal = gameBoard[combination[0].row]![combination[0].col];
+    const secVal = gameBoard[combination[1].row]![combination[1].col];
+    const thirdVal = gameBoard[combination[2].row]![combination[2].col];
 
     if (firstVal && (firstVal === secVal && secVal === thirdVal)) {
       winner = players[firstVal];
@@ -44,14 +46,14 @@ function App() {
   const [gameTurns, setGameTurns] = useState<GameLog[]>([]);
   const activePlayer = findActivePlayer(gameTurns);
 
-  const gameBoard: Array<Array<string | null>> = [
+  const gameBoard: Array<Array<Player>> = [
     [null, null, null],
     [null, null, null],
     [null, null, null]
   ];
 
   for (const turn of gameTurns)
-    gameBoard[turn.row][turn.col] = turn.player;
+    gameBoard[turn.row]![turn.col] = turn.player;
 
   const winner = getWinner(gameBoard, players);
 
@@ -62,11 +64,11 @@ function App() {
     });
   }
 
-  const handlePlayerNameChange = (symbol: "X" | "O", name: string) => {
+  const handlePlayerNameChange = (symbol: Player, name: string) => {
     setPlayers(prevPlayers => {
       return {
         ...prevPlayers,
-        [symbol]: name
+        [symbol!]: name
       }
     })
   }

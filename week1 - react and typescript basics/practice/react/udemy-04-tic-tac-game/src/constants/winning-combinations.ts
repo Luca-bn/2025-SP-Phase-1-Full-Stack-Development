@@ -1,6 +1,6 @@
 export type Cell = { row: number, col: number };
 
-const WINNING_COMBINATIONS: Cell[][] = [
+const WINNING_COMBINATIONS: [Cell, Cell, Cell][] = [
     // three rows
     [
         { row: 0, col: 0 },
