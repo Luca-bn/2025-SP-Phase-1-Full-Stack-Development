@@ -173,11 +173,11 @@
 | Day | Tasks                                                           | Done | Time (Hours) |
 | --- | --------------------------------------------------------------- | ---- | ------------ |
 | 8   | **Redux Fundamentals**                                          |      | 6            |
-|     | - Read Redux Docs: Core Concepts.                               | [ ]  |              |
+|     | - Read Redux Docs: Core Concepts.                               | [X]  |              |
 |     | - Add Redux to your Todo List app.                              | [ ]  |              |
 |     | - Manage todos with Redux state.                                | [ ]  |              |
 | 9   | **Redux Toolkit**                                               |      | 6            |
-|     | - Study Redux Toolkit.                                          | [ ]  |              |
+|     | - Study Redux Toolkit.                                          | [X]  |              |
 |     | - Refactor your Redux code with Toolkit.                        | [ ]  |              |
 |     | - Read "Effective TypeScript" Chapter 3 (Type Design).          | [X]  |              |
 | 10  | **Performance Optimization**                                    |      | 6            |
