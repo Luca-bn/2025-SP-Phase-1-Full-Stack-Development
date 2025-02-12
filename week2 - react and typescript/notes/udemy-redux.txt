@@ -1,0 +1,42 @@
+Redux ha come obiettivo quello di gestire gli stati all'interno dell'applizaione.
+Possiamo distinguere 3 tipologie di stati:
+	local state: stato associato ad un singolo componente (gestito internamente al componente con useState, useReducer);
+	cross-component state: ha effetto su multipli componenti (richiede prop-drill o context);
+	app-wide state: quando ha effetto su l'intera applicazione (es autenticazione) (richiede prop-drill o context);
+redux aiuta con i cross-component e app-wide states.
+
+Redux è un'alternativa a react context il quale può diventare complicato da gestire per grandi applicazioni o avere problemi di performance in caso di dati che cambiano in modo frequente.
+
+Redux si basa su quello che è un singolo "Central Data (State) Store" in cui mantiene gli stati.
+Questo Data Store, da la possibilità ad i componenti di effettuare il subscript (in modo da rimanere aggiornati) ed espone una "reducer function" per aggiornare i dati.
+I componenti possono quindi effettuare il dispatch di un "Action" che verrà passata alla reducer function per l'udpate.
+
+La reducer function è una funzione pura che prende sempre in input 2 valori, l'old state e l'action e deve sempre restituire un valore (il nuovo stato).
+Per mettere su il sistema del data store bisogna:
+	-	creare la reducer function (che verrà chiamata dal dispatcher per aggiornare il valore dello stato);
+	-	creare lo store usando il metodo "createStore" e passando in input la reducer function;
+	-	passare al metodod "subscribe" dello store, le funzioni che verranno chiamate dopo l'update (queste funzioni non prendono nulla in input e non restituiscono nulla in output);
+	-	usare il metodo "dispathc" per aggiornare il valore dello store, a cui passare un oggetto con la proprietà "type" che starà ad indicare l'operazione da svolgere
+
+per usare redux in react bisogna:
+	-	installare le dipendenze "redux" e "react-redux";
+	-	definire la reducer function;
+	-	creare lo state, importando ed usando la funzione "createState" da redux passando la reducer function;
+	-	usare il componente "Provider" (da redux) per wrappare il codice jsx che deve avere accesso al data store (stessa logica dei context), passando lo store creato all'attributo "store" del provider;
+	-	usare l'hook "useSelector" (da react-redux) per creare la subscription (verrà gestita automaticamente da redux);
+	-	usare l'hook "useDispatch" (da react-redux) per ottenere la dispacher function da chiamare con l'action che verrà passata alla reducer function.
+NOTA: Per i class components, la procedura da usare è tramite il metodo "connect" di react-redux.
+NOTA2: la creazione attraverso "createStore" è deprecata.
+
+Le stesse regole da usare per gli state in react, vanno usate anche in redux, come ad esempio mai mutare gli oggetti rappresentanti uno stato precedente, ma ricrearli sempre da zero.
+
+Un modo più semplice per gestire questo processo è usare reduxjs/toolkit:
+	-	Installare le Dipendenze @reduxjs/toolkit e react-redux nel tuo progetto;
+	-	Creare uno slice:
+		Uno slice è una porzione dello stato globale che contiene la logica per gestire un determinato dominio (ad esempio, i task, gli utenti, ecc.).
+		Usa la funzione createSlice per definire uno slice. Definisci lo stato iniziale, i reducer e le azioni.
+	-	Configurare lo Store (il contenitore globale dello stato dell'applicazione) usando la funzione "configureStore" per creare lo store.
+		Passa i reducer (o gli slice) allo store.
+	-	Avvolgere l'App con il Provider;
+	-	Usare lo Stato nei Componenti con gli hook "useSelector" e "useDispatch" di React-Redux.
+	
